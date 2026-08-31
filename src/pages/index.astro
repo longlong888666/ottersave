@@ -1,10 +1,33 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import OtterLogo from '../components/OtterLogo.astro';
+
+const tools = [
+  { href: '/compound-interest-calculator/', title: 'Compound Interest', desc: 'See your savings snowball over time.', emoji: '🌱', color: 'bg-mint' },
+  { href: '/retirement-savings-calculator/', title: 'Retirement Savings', desc: 'Project your nest egg and 4% income.', emoji: '🦦', color: 'bg-sky' },
+  { href: '/savings-goal-calculator/', title: 'Savings Goal', desc: 'How long until you reach your target?', emoji: '🎯', color: 'bg-butter' },
+  { href: '/rule-of-72-calculator/', title: 'Rule of 72', desc: 'When will your money double?', emoji: '✨', color: 'bg-coral' },
+  { href: '/investment-return-calculator/', title: 'Investment Return', desc: 'Lump sum vs steady contributions.', emoji: '📈', color: 'bg-mint' },
+];
 ---
 <BaseLayout
   title="OtterSave — Cozy Savings Calculators"
   description="Friendly compound interest, retirement, and savings goal calculators. Watch your money grow the cozy way."
 >
-  <h1 class="font-display text-4xl font-800 text-coco text-center mt-6">Savings, but make it cozy.</h1>
-  <p class="text-center text-coco-light text-lg mt-2">Tools coming soon.</p>
+  <section class="text-center pt-10 pb-8">
+    <div class="animate-float inline-block"><OtterLogo size={120} /></div>
+    <h1 class="font-display text-5xl font-800 text-coco mt-4">Savings, but make it cozy.</h1>
+    <p class="text-coco-light text-xl mt-3 max-w-xl mx-auto">Meet Ollie the Otter. He collects pebbles; you collect savings. Our calculators make money feel like a game — simple, warm, and a little bit adorable.</p>
+  </section>
+
+  <section class="grid gap-4 md:grid-cols-2 mt-6">
+    {tools.map(t => (
+      <a href={t.href} class="card hover:scale-[1.02] transition-transform block">
+        <div class={`inline-flex w-12 h-12 items-center justify-center rounded-2xl ${t.color} text-2xl`}>{t.emoji}</div>
+        <h2 class="font-display text-2xl font-800 text-coco mt-3">{t.title}</h2>
+        <p class="text-coco-light mt-1">{t.desc}</p>
+        <span class="inline-block mt-3 font-bold text-mint-dark">Try it →</span>
+      </a>
+    ))}
+  </section>
 </BaseLayout>
