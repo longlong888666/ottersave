@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ResultPanel from '../../components/ResultPanel.astro';
+import { savingsGoal } from '../../lib/calculators/savingsGoal';
+import { formatUSD } from '../../lib/calculators/money';
+
+const faq = [
+  { q: 'How does the daily amount work?', a: 'We divide your monthly contribution by the average days per month (30.44) to show how small daily steps add up.' },
+  { q: 'What if I already reached my goal?', a: 'The calculator shows zero months needed — time to celebrate like Ollie with a shiny new pebble!' },
+  { q: 'Do contributions earn interest here?', a: 'Yes. Enter an annual return and your balance grows with monthly compounding.' },
+];
+const faqJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+});
+---
+<BaseLayout
+  title="Savings Goal Calculator — OtterSave"
+  description="Free savings goal calculator: how long until you reach your target, how much to save daily or monthly."
+  faqJsonLd={faqJsonLd}
+>
+  <h1 class="font-display text-4xl font-800 text-coco">Savings Goal Calculator</h1>
+  <p class="text-coco-light mt-2 text-lg">Big dreams, tiny steps. Ollie approves.</p>
+
+  <form id="goal-form" class="card mt-6 grid gap-4 md:grid-cols-2">
+    <div><label class="label" for="target">Target amount ($)</label><input class="input" id="target" type="number" min="1" value="50000" /></div>
+    <div><label class="label" for="current">Already saved ($)</label><input class="input" id="current" type="number" min="0" value="5000" /></div>
+    <div><label class="label" for="monthly">Monthly contribution ($)</label><input class="input" id="monthly" type="number" min="0" value="500" /></div>
+    <div><label class="label" for="rate">Annual return (%)</label><input class="input" id="rate" type="number" min="0" max="30" step="0.1" value="5" /></div>
+    <div class="md:col-span-2"><button class="btn w-full" type="submit">Calculate</button></div>
+  </form>
+
+  <div id="results" class="hidden">
+    <ResultPanel results={{ 'Time to goal': '', 'Years': '', 'Daily amount': '', 'Monthly amount': '' }} />
+  </div>
+
+  <section class="mt-10">
+    <h2 class="font-display text-2xl font-800 text-coco">Savings goal FAQ</h2>
+    {faq.map(f => (
+      <div class="card mt-4"><h3 class="font-display font-bold text-coco text-lg">{f.q}</h3><p class="text-coco-light mt-1">{f.a}</p></div>
+    ))}
+  </section>
+
+  <nav class="mt-10">
+    <h2 class="font-display text-2xl font-800 text-coco mb-2">More cozy calculators</h2>
+    <div class="flex flex-wrap gap-2">
+      <a class="btn bg-sky text-coco" href="/compound-interest-calculator/">Compound Interest</a>
+      <a class="btn bg-mint" href="/retirement-savings-calculator/">Retirement</a>
+      <a class="btn bg-coral text-coco" href="/rule-of-72-calculator/">Rule of 72</a>
+      <a class="btn bg-butter text-coco" href="/investment-return-calculator/">Investment Return</a>
+    </div>
+  </nav>
+
+  <div class="mt-10 text-center text-coco-light text-sm"><span>Advertisement placeholder</span></div>
+
+  <script>
+    import { savingsGoal } from '../../lib/calculators/savingsGoal';
+    import { formatUSD } from '../../lib/calculators/money';
+
+    document.getElementById('goal-form')!.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const target = Number((document.getElementById('target') as HTMLInputElement).value) || 0;
+      const current = Number((document.getElementById('current') as HTMLInputElement).value) || 0;
+      const monthly = Number((document.getElementById('monthly') as HTMLInputElement).value) || 0;
+      const rate = Number((document.getElementById('rate') as HTMLInputElement).value) || 0;
+      const r = savingsGoal(target, current, monthly, rate);
+      const box = document.getElementById('results') as HTMLElement;
+      const dts = box.querySelectorAll('dt');
+      const dds = box.querySelectorAll('dd');
+      const time = Number.isFinite(r.months) ? (r.months < 12 ? `${r.months} months` : `${(r.months / 12).toFixed(1)} years`) : 'Keep going!';
+      const years = Number.isFinite(r.years) ? String(r.years) : '—';
+      dts.forEach((dt, i) => { (dt as HTMLElement).textContent = ['Time to goal', 'Years', 'Daily amount', 'Monthly amount'][i]; });
+      dds.forEach((dd, i) => { (dd as HTMLElement).textContent = [time, years, formatUSD(r.daily), formatUSD(r.monthly)][i]; });
+      box.classList.remove('hidden');
+    });
+  </script>
+</BaseLayout>
