@@ -29,16 +29,18 @@ import OtterLogo from '../components/OtterLogo.astro';
     }
   </head>
   <body>
-    <header class="sticky top-0 z-20 bg-cream/90 backdrop-blur border-b-2 border-mint/20">
+    <header class="sticky top-0 z-20 bg-cream/80 backdrop-blur-md border-b-2 border-mint/20">
       <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2">
-          <OtterLogo size={40} />
+        <a href="/" class="flex items-center gap-2 group">
+          <span class="bg-white rounded-2xl shadow-md p-1.5 group-hover:scale-105 transition-transform inline-flex">
+            <OtterLogo size={36} />
+          </span>
           <span class="font-display font-800 text-2xl text-coco">OtterSave</span>
         </a>
-        <nav class="flex items-center gap-4 text-coco-light font-bold">
-          <a href="/" class="hover:text-coco">Tools</a>
-          <a href="/about/" class="hover:text-coco">About</a>
-          <a href="/contact/" class="hover:text-coco">Contact</a>
+        <nav class="flex items-center gap-2">
+          <a href="/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-mint/20 hover:text-coco transition-colors">Tools</a>
+          <a href="/about/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-mint/20 hover:text-coco transition-colors">About</a>
+          <a href="/contact/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-mint/20 hover:text-coco transition-colors">Contact</a>
         </nav>
       </div>
     </header>
