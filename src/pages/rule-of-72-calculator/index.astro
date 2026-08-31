@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ResultPanel from '../../components/ResultPanel.astro';
+import { ruleOf72 } from '../../lib/calculators/ruleOf72';
+
+const faq = [
+  { q: 'What is the Rule of 72?', a: 'It is a quick mental shortcut: divide 72 by your annual return to estimate how many years it takes your money to double.' },
+  { q: 'Is the Rule of 72 exact?', a: 'It is a close approximation, most accurate for returns between 6% and 10%. For exact numbers use the compound interest calculator.' },
+];
+const faqJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+});
+---
+<BaseLayout
+  title="Rule of 72 Calculator — OtterSave"
+  description="Free Rule of 72 calculator: how many years until your money doubles at a given return rate."
+  faqJsonLd={faqJsonLd}
+>
+  <h1 class="font-display text-4xl font-800 text-coco">Rule of 72 Calculator</h1>
+  <p class="text-coco-light mt-2 text-lg">How long until your money doubles? Ollie counts pebbles while you wait.</p>
+
+  <form id="r72-form" class="card mt-6 grid gap-4">
+    <div><label class="label" for="rate">Annual return (%)</label><input class="input" id="rate" type="number" min="0.1" max="30" step="0.1" value="8" /></div>
+    <div><button class="btn w-full" type="submit">Calculate</button></div>
+  </form>
+
+  <div id="results" class="hidden">
+    <ResultPanel results={{ 'Years to double': '', 'Rate': '' }} />
+  </div>
+
+  <section class="mt-10">
+    <h2 class="font-display text-2xl font-800 text-coco">Rule of 72 FAQ</h2>
+    {faq.map(f => (
+      <div class="card mt-4"><h3 class="font-display font-bold text-coco text-lg">{f.q}</h3><p class="text-coco-light mt-1">{f.a}</p></div>
+    ))}
+  </section>
+
+  <nav class="mt-10">
+    <h2 class="font-display text-2xl font-800 text-coco mb-2">More cozy calculators</h2>
+    <div class="flex flex-wrap gap-2">
+      <a class="btn bg-sky text-coco" href="/compound-interest-calculator/">Compound Interest</a>
+      <a class="btn bg-mint" href="/retirement-savings-calculator/">Retirement</a>
+      <a class="btn bg-butter text-coco" href="/savings-goal-calculator/">Savings Goal</a>
+      <a class="btn bg-coral text-coco" href="/investment-return-calculator/">Investment Return</a>
+    </div>
+  </nav>
+
+  <div class="mt-10 text-center text-coco-light text-sm"><span>Advertisement placeholder</span></div>
+
+  <script>
+    import { ruleOf72 } from '../../lib/calculators/ruleOf72';
+
+    document.getElementById('r72-form')!.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const rate = Number((document.getElementById('rate') as HTMLInputElement).value) || 0;
+      const r = ruleOf72(rate);
+      const box = document.getElementById('results') as HTMLElement;
+      const dts = box.querySelectorAll('dt');
+      const dds = box.querySelectorAll('dd');
+      const years = Number.isFinite(r.years) ? `${r.years.toFixed(1)} years` : '∞';
+      dts.forEach((dt, i) => { (dt as HTMLElement).textContent = ['Years to double', 'Rate'][i]; });
+      dds.forEach((dd, i) => { (dd as HTMLElement).textContent = [years, `${rate}%`][i]; });
+      box.classList.remove('hidden');
+    });
+  </script>
+</BaseLayout>

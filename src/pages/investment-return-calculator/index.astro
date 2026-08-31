@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ResultPanel from '../../components/ResultPanel.astro';
+import { investmentReturn } from '../../lib/calculators/investmentReturn';
+import { formatUSD } from '../../lib/calculators/money';
+
+const faq = [
+  { q: 'What is the difference between lump sum and monthly investing?', a: 'A lump sum starts working immediately; monthly investing (dollar-cost averaging) spreads risk. Both can work well.' },
+  { q: 'Does this account for inflation?', a: 'No. Returns are nominal; subtract expected inflation (~2-3%) for a rough real return.' },
+];
+const faqJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+});
+---
+<BaseLayout
+  title="Investment Return Calculator — OtterSave"
+  description="Free investment return calculator: compare lump sum vs monthly investing with compound growth chart."
+  faqJsonLd={faqJsonLd}
+>
+  <h1 class="font-display text-4xl font-800 text-coco">Investment Return Calculator</h1>
+  <p class="text-coco-light mt-2 text-lg">Lump sum or steady pebbles? See which path grows your pile.</p>
+
+  <form id="inv-form" class="card mt-6 grid gap-4 md:grid-cols-2">
+    <div><label class="label" for="lump">Initial investment ($)</label><input class="input" id="lump" type="number" min="0" step="100" value="10000" /></div>
+    <div><label class="label" for="monthly">Monthly contribution ($)</label><input class="input" id="monthly" type="number" min="0" step="50" value="500" /></div>
+    <div><label class="label" for="years">Years</label><input class="input" id="years" type="number" min="1" max="60" value="10" /></div>
+    <div><label class="label" for="rate">Annual return (%)</label><input class="input" id="rate" type="number" min="0" max="30" step="0.1" value="7" /></div>
+    <div class="md:col-span-2"><button class="btn w-full" type="submit">Calculate</button></div>
+  </form>
+
+  <div id="chart-box" class="mt-6 hidden"><canvas id="inv-chart" class="w-full max-h-72"></canvas></div>
+
+  <div id="results" class="hidden">
+    <ResultPanel results={{ 'Final value': '', 'Total invested': '', 'Investment gain': '', 'Lump sum alone': '' }} />
+  </div>
+
+  <section class="mt-10">
+    <h2 class="font-display text-2xl font-800 text-coco">Investment return FAQ</h2>
+    {faq.map(f => (
+      <div class="card mt-4"><h3 class="font-display font-bold text-coco text-lg">{f.q}</h3><p class="text-coco-light mt-1">{f.a}</p></div>
+    ))}
+  </section>
+
+  <nav class="mt-10">
+    <h2 class="font-display text-2xl font-800 text-coco mb-2">More cozy calculators</h2>
+    <div class="flex flex-wrap gap-2">
+      <a class="btn bg-sky text-coco" href="/compound-interest-calculator/">Compound Interest</a>
+      <a class="btn bg-mint" href="/retirement-savings-calculator/">Retirement</a>
+      <a class="btn bg-butter text-coco" href="/savings-goal-calculator/">Savings Goal</a>
+      <a class="btn bg-coral text-coco" href="/rule-of-72-calculator/">Rule of 72</a>
+    </div>
+  </nav>
+
+  <div class="mt-10 text-center text-coco-light text-sm"><span>Advertisement placeholder</span></div>
+
+  <script>
+    import { investmentReturn } from '../../lib/calculators/investmentReturn';
+    import { formatUSD } from '../../lib/calculators/money';
+    import { Chart } from 'chart.js/auto';
+
+    document.getElementById('inv-form')!.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const lump = Number((document.getElementById('lump') as HTMLInputElement).value) || 0;
+      const monthly = Number((document.getElementById('monthly') as HTMLInputElement).value) || 0;
+      const years = Number((document.getElementById('years') as HTMLInputElement).value) || 1;
+      const rate = Number((document.getElementById('rate') as HTMLInputElement).value) || 0;
+      const r = investmentReturn(lump, monthly, years, rate);
+
+      const box = document.getElementById('results') as HTMLElement;
+      const dts = box.querySelectorAll('dt');
+      const dds = box.querySelectorAll('dd');
+      dts.forEach((dt, i) => { (dt as HTMLElement).textContent = ['Final value', 'Total invested', 'Investment gain', 'Lump sum alone'][i]; });
+      dds.forEach((dd, i) => { (dd as HTMLElement).textContent = [formatUSD(r.total), formatUSD(r.contributions), formatUSD(r.interest), formatUSD(r.lumpOnly)][i]; });
+      box.classList.remove('hidden');
+
+      const chartBox = document.getElementById('chart-box') as HTMLElement;
+      chartBox.classList.remove('hidden');
+      new Chart(document.getElementById('inv-chart') as HTMLCanvasElement, {
+        type: 'line',
+        data: {
+          labels: r.series.map(s => `Y${s.year}`),
+          datasets: [{ label: 'Balance ($)', data: r.series.map(s => Math.round(s.value)), borderColor: '#A8D8F0', backgroundColor: 'rgba(168,216,240,0.15)', fill: true, tension: 0.4 }],
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v: string | number) => formatUSD(Number(v)) } } } },
+      });
+    });
+  </script>
+</BaseLayout>
