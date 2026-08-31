@@ -1,0 +1,57 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  faqJsonLd?: string;
+}
+const { title, description, faqJsonLd } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site!);
+import OtterLogo from '../components/OtterLogo.astro';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    {
+      faqJsonLd && <script type="application/ld+json" set:html={faqJsonLd}></script>
+    }
+  </head>
+  <body>
+    <header class="sticky top-0 z-20 bg-cream/90 backdrop-blur border-b-2 border-mint/20">
+      <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2">
+          <OtterLogo size={40} />
+          <span class="font-display font-800 text-2xl text-coco">OtterSave</span>
+        </a>
+        <nav class="flex items-center gap-4 text-coco-light font-bold">
+          <a href="/" class="hover:text-coco">Tools</a>
+          <a href="/about/" class="hover:text-coco">About</a>
+          <a href="/contact/" class="hover:text-coco">Contact</a>
+        </nav>
+      </div>
+    </header>
+    <main class="max-w-4xl mx-auto px-4 py-8 min-h-[60vh]">
+      <slot />
+    </main>
+    <footer class="max-w-4xl mx-auto px-4 py-8 border-t-2 border-mint/20 text-center text-coco-light">
+      <p class="font-bold">&copy; {new Date().getFullYear()} OtterSave · <a href="/privacy-policy/" class="hover:text-coco">Privacy Policy</a> · <a href="/contact/" class="hover:text-coco">Contact</a></p>
+      <p class="text-sm mt-1">Savings, but make it cozy.</p>
+    </footer>
+  </body>
+</html>
+
+<style>
+  @import url(../styles/global.css);
+</style>
