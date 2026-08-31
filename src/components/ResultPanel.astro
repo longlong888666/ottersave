@@ -1,0 +1,53 @@
+---
+interface Props { results: Record<string, string>; }
+const { results } = Astro.props;
+const entries = Object.entries(results);
+---
+
+<div class="card mt-6 relative overflow-hidden" aria-live="polite">
+  <div id="coin-scatter" class="absolute inset-0 pointer-events-none"></div>
+  <h2 class="font-display text-2xl font-800 text-coco mb-4">Your cozy results</h2>
+  <dl class="space-y-3">
+    {entries.map(([label, value]) => (
+      <div class="flex items-center justify-between border-b border-mint/20 pb-2">
+        <dt class="text-coco-light font-bold">{label}</dt>
+        <dd class="font-display text-xl font-800 text-mint-dark">{value}</dd>
+      </div>
+    ))}
+  </dl>
+  <div class="mt-4">
+    <canvas id="share-canvas" width="1080" height="1080" class="hidden"></canvas>
+    <button type="button" id="share-btn" class="btn bg-sky text-coco">Share this</button>
+  </div>
+</div>
+
+<script>
+  import { scatterCoins } from './CoinScatter';
+  import { renderShareCard } from './ShareCard';
+
+  const panel = document.currentScript?.closest('.card') as HTMLElement | null;
+  if (panel) scatterCoins(panel.querySelector('#coin-scatter') as HTMLElement);
+
+  const shareBtn = document.getElementById('share-btn') as HTMLButtonElement | null;
+  const canvas = document.getElementById('share-canvas') as HTMLCanvasElement | null;
+  if (shareBtn && canvas) {
+    shareBtn.addEventListener('click', () => {
+      const rows: [string, string][] = [];
+      panel?.querySelectorAll('dt, dd').forEach((el, i) => {
+        const isDt = i % 2 === 0;
+        if (isDt) rows.push([el.textContent?.trim() ?? '', '']);
+        else rows[rows.length - 1][1] = el.textContent?.trim() ?? '';
+      });
+      renderShareCard(canvas, { title: 'My savings', rows });
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ottersave-share.png';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    });
+  }
+</script>
