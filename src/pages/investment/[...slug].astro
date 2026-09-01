@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import InvestmentReturnCalculator from '../../components/InvestmentReturnCalculator.astro';
+import LeafIcon from '../../components/LeafIcon.astro';
+import { allInvestScenarios, relatedInvestScenarios, type InvestScenario } from '../../lib/longtail/investScenarios';
+import { investmentReturn } from '../../lib/calculators/investmentReturn';
+import { formatUSD } from '../../lib/calculators/money';
+
+export function getStaticPaths() {
+  return allInvestScenarios().map((scenario) => ({
+    params: { slug: scenario.slug },
+    props: { scenario },
+  }));
+}
+
+const { scenario } = Astro.props as { scenario: InvestScenario };
+const r = investmentReturn(scenario.lump, scenario.monthly, scenario.years, scenario.rate);
+const related = relatedInvestScenarios(scenario);
+
+const monthlyDesc = scenario.monthly > 0 ? `plus ${formatUSD(scenario.monthly)} a month` : 'with no monthly additions';
+const faq = [
+  {
+    q: `What is my investment worth after ${scenario.years} years?`,
+    a: `${formatUSD(scenario.lump)} invested for ${scenario.years} years at ${scenario.rate}%${scenario.monthly > 0 ? `, plus ${formatUSD(scenario.monthly)} a month,` : ''} grows to about ${formatUSD(r.total)} — a gain of ${formatUSD(r.interest)}.`,
+  },
+  {
+    q: `How much of that is my own money?`,
+    a: `You put in ${formatUSD(r.contributions)} (initial + contributions). The rest, ${formatUSD(r.interest)}, is growth from compounding.`,
+  },
+  {
+    q: `What if I only made the one-time investment?`,
+    a: `Without monthly contributions, ${formatUSD(scenario.lump)} alone would grow to about ${formatUSD(r.lumpOnly)}. Adding ${formatUSD(scenario.monthly)} a month brings the total to ${formatUSD(r.total)}.`,
+  },
+  {
+    q: `Is ${scenario.rate}% realistic?`,
+    a: `${scenario.rate}% is within the historical range for long-term stock market returns, but returns vary and past performance never guarantees future results.`,
+  },
+];
+const faqJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+});
+---
+
+<BaseLayout
+  title={`${scenario.title} — OtterSave`}
+  description={scenario.description}
+  faqJsonLd={faqJsonLd}
+>
+  <nav class="text-sm text-coco-light mb-3">
+    <a href="/" class="hover:text-mint-dark">Home</a> <span class="mx-1">·</span>
+    <a href="/investment-return-calculator/" class="hover:text-mint-dark">Investment Return</a> <span class="mx-1">·</span>
+    <span class="font-bold text-coco">{formatUSD(scenario.lump)} · {scenario.years}y</span>
+  </nav>
+
+  <h1 class="woodsign text-xl md:text-2xl">{scenario.title}</h1>
+  <p class="text-coco-light mt-3 text-lg font-body">{scenario.blurb}</p>
+
+  <!-- 答案区 -->
+  <div class="card mt-6 bg-white/70">
+    <h2 class="hand-title text-2xl flex items-center gap-2 mb-3">
+      <LeafIcon size={24} class="text-mint animate-wiggle" />The answer
+    </h2>
+    <p class="text-coco-light text-lg">
+      Investing <strong class="text-coco">{formatUSD(scenario.lump)}</strong> {monthlyDesc} for{' '}
+      <strong class="text-coco">{scenario.years} years</strong> at <strong class="text-coco">{scenario.rate}%</strong> grows to approximately
+    </p>
+    <div class="text-4xl md:text-5xl font-display font-bold text-mint-dark mt-3">{formatUSD(r.total)}</div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-5">
+      <div class="bg-cream rounded-2xl p-4 text-center">
+        <div class="text-xs text-coco-light font-bold uppercase tracking-wide">You invest</div>
+        <div class="text-xl font-display font-bold text-coco mt-1">{formatUSD(r.contributions)}</div>
+      </div>
+      <div class="bg-cream rounded-2xl p-4 text-center">
+        <div class="text-xs text-coco-light font-bold uppercase tracking-wide">Investment gain</div>
+        <div class="text-xl font-display font-bold text-mint-dark mt-1">{formatUSD(r.interest)}</div>
+      </div>
+      <div class="bg-cream rounded-2xl p-4 text-center col-span-2 md:col-span-1">
+        <div class="text-xs text-coco-light font-bold uppercase tracking-wide">Lump sum alone</div>
+        <div class="text-xl font-display font-bold text-coral mt-1">{formatUSD(r.lumpOnly)}</div>
+      </div>
+    </div>
+  </div>
+
+  <InvestmentReturnCalculator lump={scenario.lump} monthly={scenario.monthly} years={scenario.years} rate={scenario.rate} />
+
+  <!-- FAQ -->
+  <section class="mt-10">
+    <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Quick answers</h2>
+    {faq.map((f) => (
+      <div class="card mt-4">
+        <h3 class="hand-title text-xl">{f.q}</h3>
+        <p class="text-coco-light mt-1">{f.a}</p>
+      </div>
+    ))}
+  </section>
+
+  <!-- 站内互链 -->
+  <section class="mt-10">
+    <h2 class="hand-title text-3xl flex items-center gap-2 mb-3"><LeafIcon size={26} class="text-mint animate-wiggle" />Explore more investment plans</h2>
+    <div class="flex flex-wrap gap-3">
+      {related.map((s) => (
+        <a class="btn btn-sky" href={`/investment/${s.slug}/`}>{formatUSD(s.lump)} · {s.monthly > 0 ? `+${formatUSD(s.monthly)}/mo` : 'lump'}</a>
+      ))}
+    </div>
+  </section>
+
+  <nav class="mt-10">
+    <h2 class="hand-title text-3xl flex items-center gap-2 mb-3"><LeafIcon size={26} class="text-mint animate-wiggle" />More cozy calculators</h2>
+    <div class="flex flex-wrap gap-3">
+      <a class="btn" href="/compound-interest-calculator/">Compound Interest</a>
+      <a class="btn" href="/savings-goal-calculator/">Savings Goal</a>
+      <a class="btn" href="/retirement-savings-calculator/">Retirement</a>
+      <a class="btn btn-coral" href="/rule-of-72-calculator/">Rule of 72</a>
+    </div>
+  </nav>
+
+  <div class="mt-10 text-center text-coco-light text-sm"><span>Advertisement placeholder</span></div>
+</BaseLayout>

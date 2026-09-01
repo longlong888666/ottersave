@@ -1,9 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ResultPanel from '../../components/ResultPanel.astro';
+import RetirementCalculator from '../../components/RetirementCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
-import { retirementSavings } from '../../lib/calculators/retirement';
-import { formatUSD } from '../../lib/calculators/money';
 
 const faq = [
   { q: 'What is the 4% rule?', a: 'The 4% rule says you can withdraw 4% of your savings each year in retirement with low risk of running out over 30 years.' },
@@ -25,18 +23,7 @@ const faqJsonLd = JSON.stringify({
   <h1 class="woodsign text-xl md:text-2xl">Retirement Savings Calculator</h1>
   <p class="text-coco-light mt-3 text-lg font-body">Picture future-you, floating on a raft of savings.</p>
 
-  <form id="ret-form" class="card mt-6 grid gap-4 md:grid-cols-2">
-    <div><label class="label" for="age">Current age</label><input class="input" id="age" type="number" min="18" max="90" value="30" /></div>
-    <div><label class="label" for="ret-age">Retirement age</label><input class="input" id="ret-age" type="number" min="30" max="90" value="65" /></div>
-    <div><label class="label" for="savings">Current savings ($)</label><input class="input" id="savings" type="number" min="0" step="1000" value="10000" /></div>
-    <div><label class="label" for="monthly">Monthly contribution ($)</label><input class="input" id="monthly" type="number" min="0" step="50" value="500" /></div>
-    <div><label class="label" for="rate">Annual return (%)</label><input class="input" id="rate" type="number" min="0" max="30" step="0.1" value="7" /></div>
-    <div class="md:col-span-2"><button class="btn w-full" type="submit">Calculate</button></div>
-  </form>
-
-  <div id="results" class="hidden">
-    <ResultPanel results={{ 'Projected total': '', 'Monthly income (4%)': '', 'Total contributed': '', 'Interest earned': '' }} />
-  </div>
+  <RetirementCalculator />
 
   <section class="mt-10">
     <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Retirement savings FAQ</h2>
@@ -56,25 +43,4 @@ const faqJsonLd = JSON.stringify({
   </nav>
 
   <div class="mt-10 text-center text-coco-light text-sm"><span>Advertisement placeholder</span></div>
-
-  <script>
-    import { retirementSavings } from '../../lib/calculators/retirement';
-    import { formatUSD } from '../../lib/calculators/money';
-
-    document.getElementById('ret-form')!.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const age = Number((document.getElementById('age') as HTMLInputElement).value) || 0;
-      const retAge = Number((document.getElementById('ret-age') as HTMLInputElement).value) || 65;
-      const savings = Number((document.getElementById('savings') as HTMLInputElement).value) || 0;
-      const monthly = Number((document.getElementById('monthly') as HTMLInputElement).value) || 0;
-      const rate = Number((document.getElementById('rate') as HTMLInputElement).value) || 0;
-      const r = retirementSavings(age, retAge, savings, monthly, rate);
-      const box = document.getElementById('results') as HTMLElement;
-      const dts = box.querySelectorAll('dt');
-      const dds = box.querySelectorAll('dd');
-      dts.forEach((dt, i) => { (dt as HTMLElement).textContent = ['Projected total', 'Monthly income (4%)', 'Total contributed', 'Interest earned'][i]; });
-      dds.forEach((dd, i) => { (dd as HTMLElement).textContent = [formatUSD(r.total), formatUSD(r.monthlyWithdrawal), formatUSD(r.contributions), formatUSD(r.interest)][i]; });
-      box.classList.remove('hidden');
-    });
-  </script>
 </BaseLayout>

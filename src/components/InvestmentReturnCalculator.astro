@@ -1,0 +1,71 @@
+---
+import ResultPanel from './ResultPanel.astro';
+
+interface Props {
+  lump?: number;
+  monthly?: number;
+  years?: number;
+  rate?: number;
+}
+const { lump = 10000, monthly = 500, years = 10, rate = 7 } = Astro.props;
+---
+
+<form id="inv-form" class="card mt-6 grid gap-4 md:grid-cols-2">
+  <div><label class="label" for="lump">Initial investment ($)</label><input class="input" id="lump" type="number" min="0" step="100" value={lump} /></div>
+  <div><label class="label" for="monthly">Monthly contribution ($)</label><input class="input" id="monthly" type="number" min="0" step="50" value={monthly} /></div>
+  <div><label class="label" for="years">Years</label><input class="input" id="years" type="number" min="1" max="60" value={years} /></div>
+  <div><label class="label" for="rate">Annual return (%)</label><input class="input" id="rate" type="number" min="0" max="30" step="0.1" value={rate} /></div>
+  <div class="md:col-span-2"><button class="btn w-full" type="submit">Calculate</button></div>
+</form>
+
+<div id="chart-box" class="mt-6 hidden"><canvas id="inv-chart" class="w-full max-h-72"></canvas></div>
+
+<div id="results" class="hidden">
+  <ResultPanel results={{ 'Final value': '', 'Total invested': '', 'Investment gain': '', 'Lump sum alone': '' }} />
+</div>
+
+<script>
+  import { investmentReturn } from '../lib/calculators/investmentReturn';
+  import { formatUSD } from '../lib/calculators/money';
+  import { Chart } from 'chart.js/auto';
+
+  let invChart: Chart | null = null;
+
+  document.getElementById('inv-form')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const lump = Number((document.getElementById('lump') as HTMLInputElement).value) || 0;
+    const monthly = Number((document.getElementById('monthly') as HTMLInputElement).value) || 0;
+    const years = Number((document.getElementById('years') as HTMLInputElement).value) || 1;
+    const rate = Number((document.getElementById('rate') as HTMLInputElement).value) || 0;
+    const r = investmentReturn(lump, monthly, years, rate);
+
+    const box = document.getElementById('results') as HTMLElement;
+    const dts = box.querySelectorAll('dt');
+    const dds = box.querySelectorAll('dd');
+    dts.forEach((dt, i) => { (dt as HTMLElement).textContent = ['Final value', 'Total invested', 'Investment gain', 'Lump sum alone'][i]; });
+    dds.forEach((dd, i) => { (dd as HTMLElement).textContent = [formatUSD(r.total), formatUSD(r.contributions), formatUSD(r.interest), formatUSD(r.lumpOnly)][i]; });
+    box.classList.remove('hidden');
+
+    const chartBox = document.getElementById('chart-box') as HTMLElement;
+    chartBox.classList.remove('hidden');
+    const canvas = document.getElementById('inv-chart') as HTMLCanvasElement;
+    const data = {
+      labels: r.series.map(s => `Y${s.year}`),
+      datasets: [{
+        label: 'Value ($)',
+        data: r.series.map(s => Math.round(s.value)),
+        borderColor: '#7BAE5B',
+        backgroundColor: 'rgba(123, 174, 91, 0.15)',
+        fill: true,
+        tension: 0.4,
+      }],
+    };
+    const options = { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v: string | number) => formatUSD(Number(v)) } } } };
+    if (invChart) {
+      invChart.data = data as never;
+      invChart.update();
+    } else {
+      invChart = new Chart(canvas, { type: 'line', data: data as never, options });
+    }
+  });
+</script>
