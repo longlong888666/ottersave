@@ -39,7 +39,21 @@ const entries = Object.entries(results);
     // Astro bundles <script> as module: document.currentScript is null there,
     // so always locate the card from a DOM node we actually hold.
     const panel = shareBtn.closest('.card') as HTMLElement | null;
-    if (panel) scatterCoins(panel.querySelector('#coin-scatter') as HTMLElement);
+    if (panel) {
+      const scatter = () => {
+        scatterCoins(panel.querySelector('#coin-scatter') as HTMLElement);
+      };
+      scatter();
+      // The result box starts hidden; re-scatter the coins the moment it
+      // becomes visible so the pop-and-fade plays when the user sees it.
+      const host = (panel.closest('#results') || panel.parentElement) as HTMLElement | null;
+      if (host && typeof MutationObserver !== 'undefined') {
+        const ob = new MutationObserver(() => {
+          if (!host.classList.contains('hidden')) scatter();
+        });
+        ob.observe(host, { attributes: true, attributeFilter: ['class'] });
+      }
+    }
 
     shareBtn.addEventListener('click', () => {
       const rows: [string, string][] = [];
