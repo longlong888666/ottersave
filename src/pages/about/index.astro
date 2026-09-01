@@ -1,14 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import LeafIcon from '../../components/LeafIcon.astro';
 ---
 <BaseLayout
   title="About — OtterSave"
   description="About OtterSave: cozy, accurate savings calculators for everyone."
 >
-  <h1 class="font-display text-4xl font-800 text-coco">About OtterSave</h1>
+  <h1 class="woodsign text-xl md:text-2xl">About OtterSave</h1>
   <div class="card mt-6 space-y-4 text-coco-light">
-    <p>OtterSave makes money feel approachable. We build free, accurate savings calculators with a cozy, playful style.</p>
-    <p>Our mascot, Ollie the Otter, collects favorite pebbles the way you collect savings — one small, satisfying piece at a time.</p>
-    <p>All calculations run in your browser. Nothing is stored, and we never ask for personal financial data.</p>
+    <p class="font-body">OtterSave makes money feel approachable. We build free, accurate savings calculators with a cozy, playful style.</p>
+    <p class="font-body">Our mascot, <b class="text-coco">Ollie the Otter</b>, collects favorite pebbles the way you collect savings — one small, satisfying piece at a time.</p>
+    <p class="font-body">All calculations run in your browser. Nothing is stored, and we never ask for personal financial data.</p>
   </div>
+  <p class="hand-title text-2xl mt-8 flex items-center gap-2 justify-center"><LeafIcon size={24} class="text-mint animate-wiggle" />Happy saving!</p>
 </BaseLayout>

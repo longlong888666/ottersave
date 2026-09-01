@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ResultPanel from '../../components/ResultPanel.astro';
+import LeafIcon from '../../components/LeafIcon.astro';
 import { savingsGoal } from '../../lib/calculators/savingsGoal';
 import { formatUSD } from '../../lib/calculators/money';
 
@@ -20,8 +21,8 @@ const faqJsonLd = JSON.stringify({
   description="Free savings goal calculator: how long until you reach your target, how much to save daily or monthly."
   faqJsonLd={faqJsonLd}
 >
-  <h1 class="font-display text-4xl font-800 text-coco">Savings Goal Calculator</h1>
-  <p class="text-coco-light mt-2 text-lg">Big dreams, tiny steps. Ollie approves.</p>
+  <h1 class="woodsign text-xl md:text-2xl">Savings Goal Calculator</h1>
+  <p class="text-coco-light mt-3 text-lg font-body">Big dreams, tiny steps. Ollie approves.</p>
 
   <form id="goal-form" class="card mt-6 grid gap-4 md:grid-cols-2">
     <div><label class="label" for="target">Target amount ($)</label><input class="input" id="target" type="number" min="1" value="50000" /></div>
@@ -36,19 +37,19 @@ const faqJsonLd = JSON.stringify({
   </div>
 
   <section class="mt-10">
-    <h2 class="font-display text-2xl font-800 text-coco">Savings goal FAQ</h2>
+    <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Savings goal FAQ</h2>
     {faq.map(f => (
-      <div class="card mt-4"><h3 class="font-display font-bold text-coco text-lg">{f.q}</h3><p class="text-coco-light mt-1">{f.a}</p></div>
+      <div class="card mt-4"><h3 class="hand-title text-xl">{f.q}</h3><p class="text-coco-light mt-1">{f.a}</p></div>
     ))}
   </section>
 
   <nav class="mt-10">
-    <h2 class="font-display text-2xl font-800 text-coco mb-2">More cozy calculators</h2>
-    <div class="flex flex-wrap gap-2">
-      <a class="btn bg-sky text-coco" href="/compound-interest-calculator/">Compound Interest</a>
-      <a class="btn bg-mint" href="/retirement-savings-calculator/">Retirement</a>
-      <a class="btn bg-coral text-coco" href="/rule-of-72-calculator/">Rule of 72</a>
-      <a class="btn bg-butter text-coco" href="/investment-return-calculator/">Investment Return</a>
+    <h2 class="hand-title text-3xl flex items-center gap-2 mb-3"><LeafIcon size={26} class="text-mint animate-wiggle" />More cozy calculators</h2>
+    <div class="flex flex-wrap gap-3">
+      <a class="btn btn-sky" href="/compound-interest-calculator/">Compound Interest</a>
+      <a class="btn" href="/retirement-savings-calculator/">Retirement</a>
+      <a class="btn btn-coral" href="/rule-of-72-calculator/">Rule of 72</a>
+      <a class="btn btn-butter" href="/investment-return-calculator/">Investment Return</a>
     </div>
   </nav>
 

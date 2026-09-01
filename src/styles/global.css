@@ -1,55 +1,129 @@
 @import "tailwindcss";
 
+/* ============================================================
+   OtterSave — mascot-first cozy design system
+   Clean white cards · soft pastel accents · playful rounded type
+   ============================================================ */
 @theme {
-  --color-cream: #FFF9EF;
-  --color-mint: #7BC8A6;
-  --color-mint-dark: #5BA887;
-  --color-sky: #A8D8F0;
-  --color-coral: #F5B8A9;
-  --color-butter: #F9E29C;
-  --color-coco: #4A3F35;
-  --color-coco-light: #7A6A5C;
-  --font-display: "Baloo 2", "Nunito", sans-serif;
+  --color-cream: #FFF8EC;
+  --color-mint: #7BAE5B;
+  --color-mint-dark: #5B8C46;
+  --color-sky: #A6D8F0;
+  --color-coral: #F5AFA4;
+  --color-butter: #F7D774;
+  --color-coco: #4A3620;
+  --color-coco-light: #8A7458;
+  --color-wood: #E8C9A0;
+  --color-wood-dark: #A8783F;
+  --color-sand: #F0E0BC;
+  --font-display: "Fredoka", "Baloo 2", "Nunito", sans-serif;
   --font-body: "Nunito", sans-serif;
-  --shadow-cozy: 0 10px 30px rgba(122, 106, 92, 0.12), 0 2px 8px rgba(122, 106, 92, 0.08);
+  --font-hand: "Patrick Hand", "Nunito", cursive;
+  --shadow-cozy: 0 10px 30px rgba(74, 54, 32, 0.08);
 }
 
 body {
   @apply bg-cream text-coco font-body antialiased;
   background-image:
-    radial-gradient(circle at 15% 20%, rgba(168, 216, 240, 0.25) 0, transparent 40%),
-    radial-gradient(circle at 85% 10%, rgba(249, 226, 156, 0.3) 0, transparent 35%),
-    radial-gradient(circle at 70% 85%, rgba(123, 200, 166, 0.18) 0, transparent 40%);
+    radial-gradient(circle at 10% 0%, rgba(246, 215, 116, 0.16) 0, transparent 34%),
+    radial-gradient(circle at 92% 14%, rgba(166, 216, 240, 0.22) 0, transparent 38%),
+    radial-gradient(circle at 80% 96%, rgba(123, 174, 91, 0.12) 0, transparent 40%);
 }
 
+/* ============ Buttons: soft, playful ============ */
 .btn {
-  @apply inline-flex items-center justify-center rounded-full px-6 py-3 font-display font-bold text-lg text-white cursor-pointer border-none transition-all duration-150;
-  background: linear-gradient(135deg, #7BC8A6 0%, #5BA887 100%);
-  box-shadow: 0 6px 16px rgba(91, 168, 135, 0.35);
+  @apply inline-flex items-center justify-center rounded-full font-display font-bold text-lg text-white cursor-pointer transition-all duration-150;
+  padding: 0.85rem 1.8rem;
+  background: linear-gradient(180deg, #8FC06B 0%, #6FA54F 60%, #5B8C46 100%);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 20px rgba(91, 140, 70, 0.35);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(91, 168, 135, 0.4); }
-.btn:active { transform: translateY(1px) scale(0.98); }
-.btn-sky { background: linear-gradient(135deg, #A8D8F0 0%, #7FBEE0 100%); box-shadow: 0 6px 16px rgba(127, 190, 224, 0.35); }
-.btn-sky:hover { box-shadow: 0 10px 22px rgba(127, 190, 224, 0.42); }
-.btn-butter { background: linear-gradient(135deg, #F9E29C 0%, #F2CD6B 100%); color: #4A3F35; box-shadow: 0 6px 16px rgba(242, 205, 107, 0.4); }
-.btn-butter:hover { box-shadow: 0 10px 22px rgba(242, 205, 107, 0.5); }
-.btn-coral { background: linear-gradient(135deg, #F5B8A9 0%, #EC9A86 100%); box-shadow: 0 6px 16px rgba(236, 154, 134, 0.38); }
-.btn-coral:hover { box-shadow: 0 10px 22px rgba(236, 154, 134, 0.45); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(91, 140, 70, 0.42); }
+.btn:active { transform: translateY(0) scale(0.98); }
 
+.btn-sky { background: linear-gradient(180deg, #BEE3F7 0%, #93CBEB 60%, #7FBCDE 100%); color: #2F5568; text-shadow: none; border-color: rgba(255, 255, 255, 0.6); box-shadow: 0 8px 20px rgba(127, 188, 222, 0.4); }
+.btn-sky:hover { box-shadow: 0 12px 26px rgba(127, 188, 222, 0.5); }
+.btn-butter { background: linear-gradient(180deg, #FCE79F 0%, #F7D774 60%, #EEC348 100%); color: #6B4F2E; text-shadow: none; border-color: rgba(255, 255, 255, 0.6); box-shadow: 0 8px 20px rgba(238, 195, 72, 0.42); }
+.btn-butter:hover { box-shadow: 0 12px 26px rgba(238, 195, 72, 0.5); }
+.btn-coral { background: linear-gradient(180deg, #FCCAC1 0%, #F5AFA4 60%, #E89486 100%); color: #7A3B2E; text-shadow: none; border-color: rgba(255, 255, 255, 0.6); box-shadow: 0 8px 20px rgba(232, 148, 134, 0.42); }
+.btn-coral:hover { box-shadow: 0 12px 26px rgba(232, 148, 134, 0.5); }
+
+/* ============ Cards: clean white with soft shadow ============ */
 .card {
-  @apply bg-white rounded-3xl p-6;
-  box-shadow: var(--shadow-cozy);
+  @apply relative rounded-3xl bg-white p-6;
+  border: 2px solid #F3E7D2;
+  box-shadow: 0 10px 30px rgba(74, 54, 32, 0.08);
 }
 
+/* ============ Inputs ============ */
 .input {
-  @apply w-full rounded-2xl border-2 border-mint/50 bg-cream px-4 py-3 text-lg text-coco outline-none transition-all;
+  @apply w-full rounded-2xl px-4 py-3 text-lg text-coco outline-none transition-all;
+  border: 2.5px solid #E8D9BD;
+  background: #FFFDF6;
+  font-weight: 700;
 }
-.input:focus { border-color: #7BC8A6; box-shadow: 0 0 0 4px rgba(123, 200, 166, 0.2); }
+.input:focus { border-color: #7BAE5B; box-shadow: 0 0 0 4px rgba(123, 174, 91, 0.18); }
 
 .label {
-  @apply block font-display font-bold text-coco mb-1;
+  @apply block mb-1;
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  color: #7A6248;
 }
 
+/* ============ Friendly rounded badge (page titles / pills) ============ */
+.woodsign {
+  display: inline-block;
+  padding: 0.35rem 1.2rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #EAF6DF 0%, #DCEEC9 100%);
+  border: 2px solid #C4DDB0;
+  color: #3F6A34;
+  font-family: var(--font-display);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(91, 140, 70, 0.18);
+}
+
+/* ============ Speech bubble ============ */
+.dialogue {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  border: 2px solid #EFE0C6;
+  border-radius: 24px;
+  padding: 1.1rem 1.4rem;
+  box-shadow: 0 12px 28px rgba(74, 54, 32, 0.08);
+}
+.dialogue::before {
+  content: "";
+  position: absolute;
+  left: 42px;
+  bottom: -12px;
+  border: 8px solid transparent;
+  border-top-color: #EFE0C6;
+  border-bottom-width: 0;
+}
+.dialogue::after {
+  content: "";
+  position: absolute;
+  left: 46px;
+  bottom: -8px;
+  border: 6px solid transparent;
+  border-top-color: #ffffff;
+  border-bottom-width: 0;
+}
+
+/* ============ Handwritten title ============ */
+.hand-title {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  color: var(--color-coco);
+}
+
+/* ============ Animations ============ */
 @keyframes coin-pop {
   0% { transform: scale(0); opacity: 0; }
   70% { transform: scale(1.15); }
@@ -88,3 +162,16 @@ body {
   50% { transform: rotate(3deg); }
 }
 .animate-sway { animation: sway 4s ease-in-out infinite; transform-origin: bottom center; }
+
+@keyframes flutter {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-7px) rotate(5deg); }
+}
+.animate-flutter { animation: flutter 4.5s ease-in-out infinite; }
+
+@keyframes pop-in {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.06); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-pop-in { animation: pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }

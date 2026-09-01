@@ -6,7 +6,7 @@ interface Props {
 }
 const { title, description, faqJsonLd } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site!);
-import OtterLogo from '../components/OtterLogo.astro';
+import '../styles/global.css';
 ---
 
 <!doctype html>
@@ -17,11 +17,12 @@ import OtterLogo from '../components/OtterLogo.astro';
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/img/otter-logo-256.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Patrick+Hand&display=swap"
       rel="stylesheet"
     />
     {
@@ -29,31 +30,31 @@ import OtterLogo from '../components/OtterLogo.astro';
     }
   </head>
   <body>
-    <header class="sticky top-0 z-20 bg-cream/80 backdrop-blur-md border-b-2 border-mint/20">
+    <header class="sticky top-0 z-20 bg-cream/85 backdrop-blur-md">
       <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2 group">
-          <span class="bg-white rounded-2xl shadow-md p-1.5 group-hover:scale-105 transition-transform inline-flex">
-            <OtterLogo size={36} />
+        <a href="/" class="flex items-center gap-2.5 group">
+          <span class="group-hover:scale-105 group-hover:-rotate-3 transition-transform inline-flex drop-shadow-md">
+            <img src="/img/otter-logo-256.png" alt="OtterSave — Ollie the otter" width="40" height="40" class="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-md" />
           </span>
-          <span class="font-display font-800 text-2xl text-coco">OtterSave</span>
+          <span class="font-display font-bold text-2xl text-coco tracking-tight">OtterSave</span>
         </a>
-        <nav class="flex items-center gap-2">
-          <a href="/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-mint/20 hover:text-coco transition-colors">Tools</a>
-          <a href="/about/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-mint/20 hover:text-coco transition-colors">About</a>
-          <a href="/contact/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-mint/20 hover:text-coco transition-colors">Contact</a>
+        <nav class="flex items-center gap-1.5">
+          <a href="/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-white hover:text-coco hover:shadow-md transition-all">Tools</a>
+          <a href="/about/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-white hover:text-coco hover:shadow-md transition-all">About</a>
+          <a href="/contact/" class="px-4 py-2 rounded-full font-bold text-coco-light hover:bg-white hover:text-coco hover:shadow-md transition-all">Contact</a>
         </nav>
       </div>
     </header>
     <main class="max-w-4xl mx-auto px-4 py-8 min-h-[60vh]">
       <slot />
     </main>
-    <footer class="max-w-4xl mx-auto px-4 py-8 border-t-2 border-mint/20 text-center text-coco-light">
-      <p class="font-bold">&copy; {new Date().getFullYear()} OtterSave · <a href="/privacy-policy/" class="hover:text-coco">Privacy Policy</a> · <a href="/contact/" class="hover:text-coco">Contact</a></p>
-      <p class="text-sm mt-1">Savings, but make it cozy.</p>
+    <footer class="max-w-4xl mx-auto px-4 py-10 text-center text-coco-light">
+      <div class="flex items-center justify-center gap-2 mb-3">
+        <img src="/img/otter-logo-96.png" alt="" width="34" height="34" class="w-[34px] h-[34px] rounded-lg object-cover ring-2 ring-white shadow" />
+        <span class="font-display font-bold text-coco text-lg">OtterSave</span>
+      </div>
+      <p class="font-bold text-sm">&copy; {new Date().getFullYear()} OtterSave · <a href="/privacy-policy/" class="hover:text-coco">Privacy Policy</a> · <a href="/contact/" class="hover:text-coco">Contact</a></p>
+      <p class="font-hand text-lg mt-1">Savings, but make it cozy.</p>
     </footer>
   </body>
 </html>
-
-<style>
-  @import url(../styles/global.css);
-</style>

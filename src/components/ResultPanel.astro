@@ -4,20 +4,28 @@ const { results } = Astro.props;
 const entries = Object.entries(results);
 ---
 
-<div class="card mt-6 relative overflow-hidden" aria-live="polite">
+<div class="card mt-6 relative overflow-hidden animate-pop-in" aria-live="polite">
   <div id="coin-scatter" class="absolute inset-0 pointer-events-none"></div>
-  <h2 class="font-display text-2xl font-800 text-coco mb-4">Your cozy results</h2>
+  <div class="flex items-center gap-3 mb-4">
+    <span class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md shrink-0">
+      <img src="/img/mascot-96.png" alt="Ollie the otter" width="48" height="48" class="w-full h-full object-cover" />
+    </span>
+    <div>
+      <h2 class="hand-title text-2xl leading-none">Your cozy results</h2>
+      <p class="text-coco-light text-sm mt-1">Ollie approves!</p>
+    </div>
+  </div>
   <dl class="space-y-3">
     {entries.map(([label, value]) => (
-      <div class="flex items-center justify-between border-b border-mint/20 pb-2">
+      <div class="flex items-center justify-between border-b-2 border-dashed border-mint/30 pb-2">
         <dt class="text-coco-light font-bold">{label}</dt>
-        <dd class="font-display text-xl font-800 text-mint-dark">{value}</dd>
+        <dd class="font-display text-xl font-700 text-mint-dark">{value}</dd>
       </div>
     ))}
   </dl>
   <div class="mt-4">
     <canvas id="share-canvas" width="1080" height="1080" class="hidden"></canvas>
-    <button type="button" id="share-btn" class="btn bg-sky text-coco">Share this</button>
+    <button type="button" id="share-btn" class="btn btn-sky">Share this</button>
   </div>
 </div>
 
@@ -25,12 +33,14 @@ const entries = Object.entries(results);
   import { scatterCoins } from './CoinScatter';
   import { renderShareCard } from './ShareCard';
 
-  const panel = document.currentScript?.closest('.card') as HTMLElement | null;
-  if (panel) scatterCoins(panel.querySelector('#coin-scatter') as HTMLElement);
-
   const shareBtn = document.getElementById('share-btn') as HTMLButtonElement | null;
   const canvas = document.getElementById('share-canvas') as HTMLCanvasElement | null;
   if (shareBtn && canvas) {
+    // Astro bundles <script> as module: document.currentScript is null there,
+    // so always locate the card from a DOM node we actually hold.
+    const panel = shareBtn.closest('.card') as HTMLElement | null;
+    if (panel) scatterCoins(panel.querySelector('#coin-scatter') as HTMLElement);
+
     shareBtn.addEventListener('click', () => {
       const rows: [string, string][] = [];
       panel?.querySelectorAll('dt, dd').forEach((el, i) => {
@@ -38,15 +48,16 @@ const entries = Object.entries(results);
         if (isDt) rows.push([el.textContent?.trim() ?? '', '']);
         else rows[rows.length - 1][1] = el.textContent?.trim() ?? '';
       });
-      renderShareCard(canvas, { title: 'My savings', rows });
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'ottersave-share.png';
-        a.click();
-        URL.revokeObjectURL(url);
+      renderShareCard(canvas, { title: 'My savings', rows }, () => {
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'ottersave-share.png';
+          a.click();
+          URL.revokeObjectURL(url);
+        });
       });
     });
   }
