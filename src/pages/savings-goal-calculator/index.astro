@@ -1,9 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ResultPanel from '../../components/ResultPanel.astro';
+import SavingsGoalCalculator from '../../components/SavingsGoalCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
-import { savingsGoal } from '../../lib/calculators/savingsGoal';
-import { formatUSD } from '../../lib/calculators/money';
 
 const faq = [
   { q: 'How does the daily amount work?', a: 'We divide your monthly contribution by the average days per month (30.44) to show how small daily steps add up.' },
@@ -24,17 +22,7 @@ const faqJsonLd = JSON.stringify({
   <h1 class="woodsign text-xl md:text-2xl">Savings Goal Calculator</h1>
   <p class="text-coco-light mt-3 text-lg font-body">Big dreams, tiny steps. Ollie approves.</p>
 
-  <form id="goal-form" class="card mt-6 grid gap-4 md:grid-cols-2">
-    <div><label class="label" for="target">Target amount ($)</label><input class="input" id="target" type="number" min="1" value="50000" /></div>
-    <div><label class="label" for="current">Already saved ($)</label><input class="input" id="current" type="number" min="0" value="5000" /></div>
-    <div><label class="label" for="monthly">Monthly contribution ($)</label><input class="input" id="monthly" type="number" min="0" value="500" /></div>
-    <div><label class="label" for="rate">Annual return (%)</label><input class="input" id="rate" type="number" min="0" max="30" step="0.1" value="5" /></div>
-    <div class="md:col-span-2"><button class="btn w-full" type="submit">Calculate</button></div>
-  </form>
-
-  <div id="results" class="hidden">
-    <ResultPanel results={{ 'Time to goal': '', 'Years': '', 'Daily amount': '', 'Monthly amount': '' }} />
-  </div>
+  <SavingsGoalCalculator />
 
   <section class="mt-10">
     <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Savings goal FAQ</h2>
@@ -54,26 +42,4 @@ const faqJsonLd = JSON.stringify({
   </nav>
 
   <div class="mt-10 text-center text-coco-light text-sm"><span>Advertisement placeholder</span></div>
-
-  <script>
-    import { savingsGoal } from '../../lib/calculators/savingsGoal';
-    import { formatUSD } from '../../lib/calculators/money';
-
-    document.getElementById('goal-form')!.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const target = Number((document.getElementById('target') as HTMLInputElement).value) || 0;
-      const current = Number((document.getElementById('current') as HTMLInputElement).value) || 0;
-      const monthly = Number((document.getElementById('monthly') as HTMLInputElement).value) || 0;
-      const rate = Number((document.getElementById('rate') as HTMLInputElement).value) || 0;
-      const r = savingsGoal(target, current, monthly, rate);
-      const box = document.getElementById('results') as HTMLElement;
-      const dts = box.querySelectorAll('dt');
-      const dds = box.querySelectorAll('dd');
-      const time = Number.isFinite(r.months) ? (r.months < 12 ? `${r.months} months` : `${(r.months / 12).toFixed(1)} years`) : 'Keep going!';
-      const years = Number.isFinite(r.years) ? String(r.years) : '—';
-      dts.forEach((dt, i) => { (dt as HTMLElement).textContent = ['Time to goal', 'Years', 'Daily amount', 'Monthly amount'][i]; });
-      dds.forEach((dd, i) => { (dd as HTMLElement).textContent = [time, years, formatUSD(r.daily), formatUSD(r.monthly)][i]; });
-      box.classList.remove('hidden');
-    });
-  </script>
 </BaseLayout>
