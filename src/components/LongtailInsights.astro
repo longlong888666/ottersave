@@ -1,0 +1,52 @@
+---
+// 长尾页"深度洞察"渲染组件：阶段增长表 + 参数对比 + 总结
+// 每个场景传入的 insight 均由 insights.ts 按参数真实计算，页面内容各不相同
+import LeafIcon from './LeafIcon.astro';
+import type { LongtailInsight } from '../lib/longtail/insights';
+
+interface Props {
+  insight: LongtailInsight;
+}
+const { insight } = Astro.props;
+---
+
+<section class="mt-10">
+  <h2 class="hand-title text-3xl flex items-center gap-2 mb-2">
+    <LeafIcon size={26} class="text-mint animate-wiggle" />{insight.sectionTitle}
+  </h2>
+  <p class="text-coco-light mt-2">{insight.intro}</p>
+
+  <!-- 阶段增长表 -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
+    {insight.milestones.map((m) => (
+      <div class="bg-cream rounded-2xl p-4 text-center border-2 border-white shadow-sm">
+        <div class="text-xs text-coco-light font-bold uppercase tracking-wide">{m.label}</div>
+        <div class="text-lg font-display font-bold text-mint-dark mt-1 break-words">{m.value}</div>
+        {m.note && <div class="text-[11px] text-coco-light mt-1">{m.note}</div>}
+      </div>
+    ))}
+  </div>
+
+  <!-- 参数对比洞察 -->
+  <div class="grid gap-4 mt-6">
+    {insight.comparisons.map((c) => (
+      <div class="card bg-white/70">
+        <h3 class="hand-title text-xl flex items-center gap-2">
+          <span class="w-7 h-7 rounded-full bg-butter border-2 border-white shadow-sm flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 48 48" width="14" height="14" aria-hidden="true"><path d="M24 8 L27 19 L38 22 L27 25 L24 36 L21 25 L10 22 L21 19 Z" fill="#6B4F2E"/></svg>
+          </span>
+          {c.title}
+        </h3>
+        <p class="text-coco-light mt-2">
+          {c.text}
+          {c.highlight && <strong class="text-mint-dark"> ({c.highlight})</strong>}
+        </p>
+      </div>
+    ))}
+  </div>
+
+  <!-- 总结 -->
+  <div class="mt-6 rounded-2xl bg-gradient-to-r from-mint to-mint-dark text-white p-5 shadow-md">
+    <p class="font-hand text-lg leading-relaxed">💡 {insight.takeaway}</p>
+  </div>
+</section>

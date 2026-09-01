@@ -2,7 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RetirementCalculator from '../../components/RetirementCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import LongtailInsights from '../../components/LongtailInsights.astro';
 import { allRetirementScenarios, relatedRetirementScenarios, type RetirementScenario } from '../../lib/longtail/retirementScenarios';
+import { retirementInsight } from '../../lib/longtail/insights';
 import { retirementSavings } from '../../lib/calculators/retirement';
 import { formatUSD } from '../../lib/calculators/money';
 
@@ -16,6 +18,7 @@ export function getStaticPaths() {
 const { scenario } = Astro.props as { scenario: RetirementScenario };
 const r = retirementSavings(scenario.age, scenario.retAge, 0, scenario.monthly, scenario.rate);
 const related = relatedRetirementScenarios(scenario);
+const insight = retirementInsight(scenario.age, scenario.monthly, scenario.rate);
 
 const faq = [
   {
@@ -84,6 +87,8 @@ const faqJsonLd = JSON.stringify({
   </div>
 
   <RetirementCalculator age={scenario.age} retAge={65} savings={0} monthly={scenario.monthly} rate={scenario.rate} />
+
+  <LongtailInsights insight={insight} />
 
   <!-- FAQ -->
   <section class="mt-10">

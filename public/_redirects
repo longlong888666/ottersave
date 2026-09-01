@@ -1,0 +1,3 @@
+# Cloudflare Pages redirects: catch-all for unknown paths → real 404 page
+# Static assets (including real pages) are served first; only unmatched paths hit this rule.
+/* /404.html 404

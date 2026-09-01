@@ -2,7 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import InvestmentReturnCalculator from '../../components/InvestmentReturnCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import LongtailInsights from '../../components/LongtailInsights.astro';
 import { allInvestScenarios, relatedInvestScenarios, type InvestScenario } from '../../lib/longtail/investScenarios';
+import { investInsight } from '../../lib/longtail/insights';
 import { investmentReturn } from '../../lib/calculators/investmentReturn';
 import { formatUSD } from '../../lib/calculators/money';
 
@@ -16,6 +18,7 @@ export function getStaticPaths() {
 const { scenario } = Astro.props as { scenario: InvestScenario };
 const r = investmentReturn(scenario.lump, scenario.monthly, scenario.years, scenario.rate);
 const related = relatedInvestScenarios(scenario);
+const insight = investInsight(scenario.lump, scenario.monthly, scenario.years, scenario.rate);
 
 const monthlyDesc = scenario.monthly > 0 ? `plus ${formatUSD(scenario.monthly)} a month` : 'with no monthly additions';
 const faq = [
@@ -84,6 +87,8 @@ const faqJsonLd = JSON.stringify({
   </div>
 
   <InvestmentReturnCalculator lump={scenario.lump} monthly={scenario.monthly} years={scenario.years} rate={scenario.rate} />
+
+  <LongtailInsights insight={insight} />
 
   <!-- FAQ -->
   <section class="mt-10">

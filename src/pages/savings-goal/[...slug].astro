@@ -2,7 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SavingsGoalCalculator from '../../components/SavingsGoalCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import LongtailInsights from '../../components/LongtailInsights.astro';
 import { allGoalScenarios, relatedGoalScenarios, type GoalScenario } from '../../lib/longtail/savingsGoalScenarios';
+import { goalInsight } from '../../lib/longtail/insights';
 import { savingsGoal } from '../../lib/calculators/savingsGoal';
 import { formatUSD } from '../../lib/calculators/money';
 
@@ -16,6 +18,7 @@ export function getStaticPaths() {
 const { scenario } = Astro.props as { scenario: GoalScenario };
 const r = savingsGoal(scenario.target, 0, scenario.monthly, scenario.rate);
 const related = relatedGoalScenarios(scenario);
+const insight = goalInsight(scenario.target, scenario.monthly, scenario.rate);
 
 function fmtK(n: number): string {
   return n >= 1000 ? `$${(n / 1000).toLocaleString()}k` : `$${n}`;
@@ -93,6 +96,8 @@ const faqJsonLd = JSON.stringify({
   </div>
 
   <SavingsGoalCalculator target={scenario.target} current={0} monthly={scenario.monthly} rate={scenario.rate} />
+
+  <LongtailInsights insight={insight} />
 
   <!-- FAQ -->
   <section class="mt-10">

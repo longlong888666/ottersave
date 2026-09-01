@@ -2,7 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CompoundCalculator from '../../components/CompoundCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import LongtailInsights from '../../components/LongtailInsights.astro';
 import { allCompoundScenarios, relatedScenarios, type LongtailScenario } from '../../lib/longtail/compoundScenarios';
+import { compoundInsight } from '../../lib/longtail/insights';
 import { compoundInterest } from '../../lib/calculators/compound';
 import { formatUSD } from '../../lib/calculators/money';
 
@@ -16,6 +18,7 @@ export function getStaticPaths() {
 const { scenario } = Astro.props as { scenario: LongtailScenario };
 const r = compoundInterest(0, scenario.monthly, scenario.rate, scenario.years);
 const related = relatedScenarios(scenario);
+const insight = compoundInsight(scenario.monthly, scenario.rate, scenario.years);
 
 const faq = [
   {
@@ -93,6 +96,8 @@ const breadcrumbJsonLd = JSON.stringify({
   </div>
 
   <CompoundCalculator principal={0} monthly={scenario.monthly} rate={scenario.rate} years={scenario.years} />
+
+  <LongtailInsights insight={insight} />
 
   <!-- FAQ -->
   <section class="mt-10">
