@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CompoundCalculator from '../../components/CompoundCalculator.astro';
+import LeafIcon from '../../components/LeafIcon.astro';
+import { allCompoundScenarios, relatedScenarios, type LongtailScenario } from '../../lib/longtail/compoundScenarios';
+import { compoundInterest } from '../../lib/calculators/compound';
+import { formatUSD } from '../../lib/calculators/money';
+
+export function getStaticPaths() {
+  return allCompoundScenarios().map((scenario) => ({
+    params: { slug: scenario.slug },
+    props: { scenario },
+  }));
+}
+
+const { scenario } = Astro.props as { scenario: LongtailScenario };
+const r = compoundInterest(0, scenario.monthly, scenario.rate, scenario.years);
+const related = relatedScenarios(scenario);
+
+const faq = [
+  {
+    q: `How much will I have after ${scenario.years} years?`,
+    a: `Saving ${formatUSD(scenario.monthly)} every month for ${scenario.years} years at ${scenario.rate}% (compounded monthly) grows to approximately ${formatUSD(r.total)} — including ${formatUSD(r.interest)} of interest earned.`,
+  },
+  {
+    q: `How much do I actually contribute?`,
+    a: `You deposit ${formatUSD(scenario.monthly)} × 12 months × ${scenario.years} years = ${formatUSD(r.contributions)} in total. The rest comes from compound interest.`,
+  },
+  {
+    q: `Is a ${scenario.rate}% return realistic?`,
+    a: `${scenario.rate}% is in line with long-term historical averages for diversified stock market investing, but returns vary and past performance never guarantees future results.`,
+  },
+  {
+    q: 'Can I adjust the numbers?',
+    a: 'Yes — the calculator below is pre-filled with this scenario. Change the monthly amount, rate, or years to see how different habits change the outcome.',
+  },
+];
+const faqJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+});
+const breadcrumbJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'OtterSave', item: 'https://ottersave.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Compound Interest', item: 'https://ottersave.com/compound-interest-calculator/' },
+    { '@type': 'ListItem', position: 3, name: `Save ${formatUSD(scenario.monthly)}/mo` },
+  ],
+});
+---
+
+<BaseLayout
+  title={`${scenario.title} — OtterSave`}
+  description={scenario.description}
+  faqJsonLd={faqJsonLd}
+>
+  <nav class="text-sm text-coco-light mb-3">
+    <a href="/" class="hover:text-mint-dark">Home</a> <span class="mx-1">·</span>
+    <a href="/compound-interest-calculator/" class="hover:text-mint-dark">Compound Interest</a> <span class="mx-1">·</span>
+    <span class="font-bold text-coco">Save {formatUSD(scenario.monthly)}/mo</span>
+  </nav>
+
+  <h1 class="woodsign text-xl md:text-2xl">{scenario.title}</h1>
+  <p class="text-coco-light mt-3 text-lg font-body">{scenario.blurb}</p>
+
+  <!-- 答案区：程序化 SEO 的核心 —— 直接给出现成答案 -->
+  <div class="card mt-6 bg-white/70">
+    <h2 class="hand-title text-2xl flex items-center gap-2 mb-3">
+      <LeafIcon size={24} class="text-mint animate-wiggle" />The answer
+    </h2>
+    <p class="text-coco-light text-lg">
+      Saving <strong class="text-coco">{formatUSD(scenario.monthly)}</strong> a month for{' '}
+      <strong class="text-coco">{scenario.years} years</strong> at{' '}
+      <strong class="text-coco">{scenario.rate}%</strong> grows to approximately
+    </p>
+    <div class="text-4xl md:text-5xl font-display font-bold text-mint-dark mt-3">{formatUSD(r.total)}</div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-5">
+      <div class="bg-cream rounded-2xl p-4 text-center">
+        <div class="text-xs text-coco-light font-bold uppercase tracking-wide">You deposit</div>
+        <div class="text-xl font-display font-bold text-coco mt-1">{formatUSD(r.contributions)}</div>
+      </div>
+      <div class="bg-cream rounded-2xl p-4 text-center">
+        <div class="text-xs text-coco-light font-bold uppercase tracking-wide">Interest earned</div>
+        <div class="text-xl font-display font-bold text-mint-dark mt-1">{formatUSD(r.interest)}</div>
+      </div>
+      <div class="bg-cream rounded-2xl p-4 text-center col-span-2 md:col-span-1">
+        <div class="text-xs text-coco-light font-bold uppercase tracking-wide">Times your money grew</div>
+        <div class="text-xl font-display font-bold text-coral mt-1">{r.total > 0 ? (r.total / Math.max(r.contributions, 1)).toFixed(1) : '0'}×</div>
+      </div>
+    </div>
+  </div>
+
+  <CompoundCalculator principal={0} monthly={scenario.monthly} rate={scenario.rate} years={scenario.years} />
+
+  <!-- FAQ -->
+  <section class="mt-10">
+    <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Quick answers</h2>
+    {faq.map((f) => (
+      <div class="card mt-4">
+        <h3 class="hand-title text-xl">{f.q}</h3>
+        <p class="text-coco-light mt-1">{f.a}</p>
+      </div>
+    ))}
+  </section>
+
+  <!-- 站内互链 -->
+  <section class="mt-10">
+    <h2 class="hand-title text-3xl flex items-center gap-2 mb-3"><LeafIcon size={26} class="text-mint animate-wiggle" />Explore more scenarios</h2>
+    <div class="flex flex-wrap gap-3">
+      {related.map((s) => (
+        <a class="btn btn-sky" href={`/compound/${s.slug}/`}>Save {formatUSD(s.monthly)}/mo · {s.years}y · {s.rate}%</a>
+      ))}
+    </div>
+  </section>
+
+  <nav class="mt-10">
+    <h2 class="hand-title text-3xl flex items-center gap-2 mb-3"><LeafIcon size={26} class="text-mint animate-wiggle" />More cozy calculators</h2>
+    <div class="flex flex-wrap gap-3">
+      <a class="btn btn-butter" href="/savings-goal-calculator/">Savings Goal</a>
+      <a class="btn btn-coral" href="/rule-of-72-calculator/">Rule of 72</a>
+      <a class="btn" href="/retirement-savings-calculator/">Retirement</a>
+      <a class="btn" href="/investment-return-calculator/">Investment Return</a>
+    </div>
+  </nav>
+
+  <div class="mt-10 text-center text-coco-light text-sm">
+    <span>Advertisement placeholder</span>
+  </div>
+</BaseLayout>

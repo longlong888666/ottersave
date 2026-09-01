@@ -1,0 +1,97 @@
+---
+import ResultPanel from './ResultPanel.astro';
+
+interface Props {
+  principal?: number;
+  monthly?: number;
+  rate?: number;
+  years?: number;
+}
+const { principal = 1000, monthly = 200, rate = 7, years = 20 } = Astro.props;
+---
+
+<form id="compound-form" class="card mt-6 grid gap-4 md:grid-cols-2">
+  <div>
+    <label class="label" for="principal">Initial amount ($)</label>
+    <input class="input" id="principal" type="number" min="0" step="100" value={principal} required />
+  </div>
+  <div>
+    <label class="label" for="monthly">Monthly contribution ($)</label>
+    <input class="input" id="monthly" type="number" min="0" step="50" value={monthly} />
+  </div>
+  <div>
+    <label class="label" for="rate">Annual interest rate (%)</label>
+    <input class="input" id="rate" type="number" min="0" max="30" step="0.1" value={rate} />
+  </div>
+  <div>
+    <label class="label" for="years">Years</label>
+    <input class="input" id="years" type="number" min="1" max="60" step="1" value={years} />
+  </div>
+  <div class="md:col-span-2">
+    <button class="btn w-full" type="submit">Calculate</button>
+  </div>
+</form>
+
+<div id="chart-box" class="mt-6 hidden">
+  <canvas id="growth-chart" class="w-full max-h-72"></canvas>
+</div>
+
+<div id="results" class="hidden">
+  <ResultPanel
+    results={{
+      'Final balance': '',
+      'Total contributions': '',
+      'Interest earned': '',
+      'Years': '',
+    }}
+  />
+</div>
+
+<script>
+  import { compoundInterest } from '../lib/calculators/compound';
+  import { formatUSD } from '../lib/calculators/money';
+  import { Chart } from 'chart.js/auto';
+
+  const form = document.getElementById('compound-form') as HTMLFormElement;
+  const resultsBox = document.getElementById('results') as HTMLElement;
+  const chartBox = document.getElementById('chart-box') as HTMLElement;
+  let growthChart: Chart | null = null;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const principal = Number((document.getElementById('principal') as HTMLInputElement).value) || 0;
+    const monthly = Number((document.getElementById('monthly') as HTMLInputElement).value) || 0;
+    const rate = Number((document.getElementById('rate') as HTMLInputElement).value) || 0;
+    const years = Number((document.getElementById('years') as HTMLInputElement).value) || 1;
+
+    const r = compoundInterest(principal, monthly, rate, years);
+
+    const dts = resultsBox.querySelectorAll('dt');
+    const dds = resultsBox.querySelectorAll('dd');
+    const values = [formatUSD(r.total), formatUSD(r.contributions), formatUSD(r.interest), `${years} years`];
+    dts.forEach((dt, i) => { (dt as HTMLElement).textContent = ['Final balance', 'Total contributions', 'Interest earned', 'Years'][i]; });
+    dds.forEach((dd, i) => { (dd as HTMLElement).textContent = values[i]; });
+    resultsBox.classList.remove('hidden');
+
+    chartBox.classList.remove('hidden');
+    const canvas = document.getElementById('growth-chart') as HTMLCanvasElement;
+    const data = {
+      labels: r.series.map(s => `Y${s.year}`),
+      datasets: [{
+        label: 'Balance ($)',
+        data: r.series.map(s => Math.round(s.value)),
+        borderColor: '#7BAE5B',
+        backgroundColor: 'rgba(123, 174, 91, 0.15)',
+        fill: true,
+        tension: 0.4,
+      }],
+    };
+    const options = { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v: string | number) => formatUSD(Number(v)) } } } };
+    if (growthChart) {
+      growthChart.data = data as never;
+      growthChart.update();
+    } else {
+      growthChart = new Chart(canvas, { type: 'line', data: data as never, options });
+    }
+  });
+</script>
