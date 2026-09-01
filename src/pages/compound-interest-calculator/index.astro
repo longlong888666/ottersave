@@ -99,6 +99,7 @@ const faqJsonLd = JSON.stringify({
     const form = document.getElementById('compound-form') as HTMLFormElement;
     const resultsBox = document.getElementById('results') as HTMLElement;
     const chartBox = document.getElementById('chart-box') as HTMLElement;
+    let growthChart: Chart | null = null;
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -118,21 +119,24 @@ const faqJsonLd = JSON.stringify({
 
       chartBox.classList.remove('hidden');
       const canvas = document.getElementById('growth-chart') as HTMLCanvasElement;
-      new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels: r.series.map(s => `Y${s.year}`),
-          datasets: [{
-            label: 'Balance ($)',
-            data: r.series.map(s => Math.round(s.value)),
-            borderColor: '#7BAE5B',
-            backgroundColor: 'rgba(123, 174, 91, 0.15)',
-            fill: true,
-            tension: 0.4,
-          }],
-        },
-        options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v: string | number) => formatUSD(Number(v)) } } } },
-      });
+      const data = {
+        labels: r.series.map(s => `Y${s.year}`),
+        datasets: [{
+          label: 'Balance ($)',
+          data: r.series.map(s => Math.round(s.value)),
+          borderColor: '#7BAE5B',
+          backgroundColor: 'rgba(123, 174, 91, 0.15)',
+          fill: true,
+          tension: 0.4,
+        }],
+      };
+      const options = { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v: string | number) => formatUSD(Number(v)) } } } };
+      if (growthChart) {
+        growthChart.data = data as never;
+        growthChart.update();
+      } else {
+        growthChart = new Chart(canvas, { type: 'line', data: data as never, options });
+      }
     });
   </script>
 </BaseLayout>

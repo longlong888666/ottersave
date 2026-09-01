@@ -61,6 +61,7 @@ const faqJsonLd = JSON.stringify({
     import { formatUSD } from '../../lib/calculators/money';
     import { Chart } from 'chart.js/auto';
 
+    let invChart: Chart | null = null;
     document.getElementById('inv-form')!.addEventListener('submit', (e) => {
       e.preventDefault();
       const lump = Number((document.getElementById('lump') as HTMLInputElement).value) || 0;
@@ -78,14 +79,18 @@ const faqJsonLd = JSON.stringify({
 
       const chartBox = document.getElementById('chart-box') as HTMLElement;
       chartBox.classList.remove('hidden');
-      new Chart(document.getElementById('inv-chart') as HTMLCanvasElement, {
-        type: 'line',
-        data: {
-          labels: r.series.map(s => `Y${s.year}`),
-          datasets: [{ label: 'Balance ($)', data: r.series.map(s => Math.round(s.value)), borderColor: '#7BAE5B', backgroundColor: 'rgba(123,174,91,0.15)', fill: true, tension: 0.4 }],
-        },
-        options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v: string | number) => formatUSD(Number(v)) } } } },
-      });
+      const canvas = document.getElementById('inv-chart') as HTMLCanvasElement;
+      const data = {
+        labels: r.series.map(s => `Y${s.year}`),
+        datasets: [{ label: 'Balance ($)', data: r.series.map(s => Math.round(s.value)), borderColor: '#7BAE5B', backgroundColor: 'rgba(123,174,91,0.15)', fill: true, tension: 0.4 }],
+      };
+      const options = { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v: string | number) => formatUSD(Number(v)) } } } };
+      if (invChart) {
+        invChart.data = data as never;
+        invChart.update();
+      } else {
+        invChart = new Chart(canvas, { type: 'line', data: data as never, options });
+      }
     });
   </script>
 </BaseLayout>
