@@ -2,11 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ResultPanel from '../../components/ResultPanel.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import AssumptionNote from '../../components/AssumptionNote.astro';
 import { ruleOf72 } from '../../lib/calculators/ruleOf72';
 
 const faq = [
   { q: 'What is the Rule of 72?', a: 'It is a quick mental shortcut: divide 72 by your annual return to estimate how many years it takes your money to double.' },
   { q: 'Is the Rule of 72 exact?', a: 'It is a close approximation, most accurate for returns between 6% and 10%. For exact numbers use the compound interest calculator.' },
+  { q: 'What return should I use?', a: 'A common long-term planning assumption for a diversified portfolio is 7% — not a guaranteed rate and not a bank deposit rate (cash savings currently earn around 4%). Historically stocks have averaged about 10% a year before inflation.' },
 ];
 const faqJsonLd = JSON.stringify({
   '@context': 'https://schema.org',
@@ -30,6 +32,8 @@ const faqJsonLd = JSON.stringify({
   <div id="results" class="hidden">
     <ResultPanel results={{ 'Years to double': '', 'Rate': '' }} />
   </div>
+
+  <AssumptionNote />
 
   <section class="mt-10">
     <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Rule of 72 FAQ</h2>

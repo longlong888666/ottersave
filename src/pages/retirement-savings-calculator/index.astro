@@ -2,11 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RetirementCalculator from '../../components/RetirementCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import AssumptionNote from '../../components/AssumptionNote.astro';
 
 const faq = [
   { q: 'What is the 4% rule?', a: 'The 4% rule says you can withdraw 4% of your savings each year in retirement with low risk of running out over 30 years.' },
   { q: 'How much do I need to retire?', a: 'A common target is 25x your annual expenses. This calculator shows your projected total and monthly withdrawal at retirement.' },
-  { q: 'What return should I assume?', a: '7% is a common long-term average for a diversified portfolio, but returns vary and past performance is no guarantee.' },
+  { q: 'What return should I assume?', a: '7% is a common long-term planning assumption for a diversified portfolio — not a guaranteed rate and not a bank deposit rate (cash savings currently earn around 4%). Historically stocks have averaged about 10% a year before inflation. Returns vary and past performance is no guarantee.' },
   { q: 'Does this include Social Security?', a: 'No. This calculator only projects your personal savings; Social Security is separate.' },
 ];
 const faqJsonLd = JSON.stringify({
@@ -24,6 +25,8 @@ const faqJsonLd = JSON.stringify({
   <p class="text-coco-light mt-3 text-lg font-body">Picture future-you, floating on a raft of savings.</p>
 
   <RetirementCalculator />
+
+  <AssumptionNote />
 
   <section class="mt-10">
     <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Retirement savings FAQ</h2>

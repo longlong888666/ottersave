@@ -2,11 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CompoundCalculator from '../../components/CompoundCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import AssumptionNote from '../../components/AssumptionNote.astro';
 
 const faq = [
   { q: 'How does compound interest work?', a: 'Compound interest means you earn interest on your interest. Each month, interest is added to your balance, and the next month you earn interest on the larger amount.' },
   { q: 'How often is interest compounded here?', a: 'This calculator compounds monthly, which is the standard for savings accounts and most investment projections.' },
-  { q: 'Is the 7% rate realistic?', a: '7% is a common long-term average for diversified stock market returns, but past performance never guarantees future results.' },
+  { q: 'Is the 7% rate realistic?', a: '7% is a common long-term planning assumption for a diversified stock portfolio — not a guaranteed rate and not a bank deposit rate (cash savings currently earn around 4%). Historically the stock market has averaged about 10% a year before inflation. Past performance never guarantees future results.' },
   { q: 'Can I include monthly contributions?', a: 'Yes. Enter a monthly contribution to see how regular saving dramatically boosts your final amount.' },
   { q: 'What is the formula used?', a: 'FV = P(1 + r/n)^(nt) + PMT × [((1 + r/n)^(nt) − 1) / (r/n)], with monthly compounding (n = 12).' },
 ];
@@ -29,6 +30,8 @@ const faqJsonLd = JSON.stringify({
   <p class="text-coco-light mt-3 text-lg font-body">Watch your savings grow — like Ollie collecting pebbles, one month at a time.</p>
 
   <CompoundCalculator />
+
+  <AssumptionNote />
 
   <section class="mt-10">
     <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Compound interest FAQ</h2>

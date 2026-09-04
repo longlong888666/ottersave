@@ -2,11 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SavingsGoalCalculator from '../../components/SavingsGoalCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import AssumptionNote from '../../components/AssumptionNote.astro';
 
 const faq = [
   { q: 'How does the daily amount work?', a: 'We divide your monthly contribution by the average days per month (30.44) to show how small daily steps add up.' },
   { q: 'What if I already reached my goal?', a: 'The calculator shows zero months needed — time to celebrate like Ollie with a shiny new pebble!' },
-  { q: 'Do contributions earn interest here?', a: 'Yes. Enter an annual return and your balance grows with monthly compounding.' },
+  { q: 'Do contributions earn interest here?', a: 'Yes. Enter an annual return and your balance grows with monthly compounding. The return is a long-term planning assumption for investments, not a guaranteed rate — cash savings currently earn around 4%.' },
 ];
 const faqJsonLd = JSON.stringify({
   '@context': 'https://schema.org',
@@ -23,6 +24,8 @@ const faqJsonLd = JSON.stringify({
   <p class="text-coco-light mt-3 text-lg font-body">Big dreams, tiny steps. Ollie approves.</p>
 
   <SavingsGoalCalculator />
+
+  <AssumptionNote />
 
   <section class="mt-10">
     <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Savings goal FAQ</h2>

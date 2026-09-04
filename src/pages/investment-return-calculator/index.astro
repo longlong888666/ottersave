@@ -2,10 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import InvestmentReturnCalculator from '../../components/InvestmentReturnCalculator.astro';
 import LeafIcon from '../../components/LeafIcon.astro';
+import AssumptionNote from '../../components/AssumptionNote.astro';
 
 const faq = [
   { q: 'What is the difference between lump sum and monthly investing?', a: 'A lump sum starts working immediately; monthly investing (dollar-cost averaging) spreads risk. Both can work well.' },
   { q: 'Does this account for inflation?', a: 'No. Returns are nominal; subtract expected inflation (~2-3%) for a rough real return.' },
+  { q: 'Is the return I enter a guaranteed rate?', a: 'No. The return is a long-term planning assumption for a diversified portfolio — not a bank deposit rate (cash savings currently earn around 4%). Historically stocks have averaged about 10% a year before inflation. Returns vary and past performance never guarantees future results.' },
 ];
 const faqJsonLd = JSON.stringify({
   '@context': 'https://schema.org',
@@ -22,6 +24,8 @@ const faqJsonLd = JSON.stringify({
   <p class="text-coco-light mt-3 text-lg font-body">Lump sum or steady pebbles? See which path grows your pile.</p>
 
   <InvestmentReturnCalculator />
+
+  <AssumptionNote />
 
   <section class="mt-10">
     <h2 class="hand-title text-3xl flex items-center gap-2"><LeafIcon size={26} class="text-mint animate-wiggle" />Investment return FAQ</h2>
